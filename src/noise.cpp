@@ -1,6 +1,7 @@
 /// @file noise.cpp
+/// @brief Functions to generate and fill arrays with noise.
 /// Functions to generate and fill arrays with noise.
-
+#include <cstring>
 #include <string.h>
 
 #if defined(__clang__)
@@ -14,16 +15,16 @@
 
 #if !VARIABLE_LENGTH_ARRAY_NEEDS_EMULATION
 #define VARIABLE_LENGTH_ARRAY(TYPE, NAME, SIZE) TYPE NAME[SIZE]
-#elif __has_include(<alloca.h>)
+#elif defined(__GNUC__)
 #include <alloca.h>
 #define VARIABLE_LENGTH_ARRAY(TYPE, NAME, SIZE) \
     TYPE* NAME = reinterpret_cast<TYPE*>(alloca(sizeof(TYPE) * (SIZE)))
-#elif __has_include(<cstdlib>)
-#include <cstdlib>
+#elif defined(_MSC_VER)
+#include <malloc.h>
 #define VARIABLE_LENGTH_ARRAY(TYPE, NAME, SIZE) \
-    TYPE* NAME = reinterpret_cast<TYPE*>(alloca(sizeof(TYPE) * (SIZE)))
+    TYPE* NAME = reinterpret_cast<TYPE*>(_alloca(sizeof(TYPE) * (SIZE)))
 #else
-#error "Compiler does not allow variable type arrays."
+#error "Compiler does not support variable length arrays."
 #endif
 
 
@@ -38,8 +39,6 @@
 #pragma GCC diagnostic push
 #if defined(__GNUC__) && (__GNUC__ >= 6)
   #pragma GCC diagnostic ignored "-Wstack-usage="
-#else
-  #pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #endif
 
 
